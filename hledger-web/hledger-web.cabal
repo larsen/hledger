@@ -176,6 +176,7 @@ library
           Handler.RegisterR
           Handler.RootR
           Handler.SidebarR
+          Handler.DashboardR
           Handler.Utils
           Hledger.Web
           Hledger.Web.Main

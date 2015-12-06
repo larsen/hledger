@@ -35,6 +35,7 @@ import Handler.RootR
 import Handler.JournalR
 import Handler.RegisterR
 import Handler.SidebarR
+import Handler.DashboardR
 
 import Hledger.Web.WebOptions (WebOpts(..), defwebopts)
 import Hledger.Data (Journal, nulljournal)
