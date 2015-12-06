@@ -5,6 +5,7 @@
 /journal         JournalR        GET POST
 /register        RegisterR       GET POST
 /sidebar         SidebarR        GET
+/dashboard       DashboardR      GET
 
 -- /accounts        AccountsR       GET
 -- /api/accounts    AccountsJsonR   GET
