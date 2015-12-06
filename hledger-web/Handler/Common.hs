@@ -75,11 +75,14 @@ sidebar vd@VD{..} =
  <br>
  <div#sidebar-content>
   <p style="margin-top:1em;">
+   <a href=@{DashboardR} .#{dashboardcurrent} title="Show dashboard">Dashboard
+  <p style="margin-top:1em;">
    <a href=@{JournalR} .#{journalcurrent} title="Show general journal entries, most recent first" style="white-space:nowrap;">Journal
   <div#accounts style="margin-top:1em;">
    ^{accounts}
 |]
  where
+  dashboardcurrent = if here == DashboardR then "current" else "" :: String
   journalcurrent = if here == JournalR then "current" else "" :: String
   accounts = balanceReportAsHtml opts vd $ balanceReport (reportopts_ $ cliopts_ opts){empty_=True} am j
 
