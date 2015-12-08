@@ -17,6 +17,7 @@ $(document).ready(function() {
   $('body').bind('keydown', 'h',       function(){ $('#helpmodal').modal('toggle'); return false; });
   $('body').bind('keydown', 'shift+/', function(){ $('#helpmodal').modal('toggle'); return false; });
   $('body').bind('keydown', 'j',       function(){ location.href = document.hledgerWebBaseurl+'/journal'; return false; });
+  $('body').bind('keydown', 'd',       function(){ location.href = document.hledgerWebBaseurl+'/dashboard'; return false; });
   $('body').bind('keydown', 's',       function(){ sidebarToggle(); return false; });
   $('body').bind('keydown', 'a',       function(){ addformShow(); return false; });
   $('body').bind('keydown', 'n',       function(){ addformShow(); return false; });
