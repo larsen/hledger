@@ -4,9 +4,12 @@
 module Handler.DashboardR where
 
 import Import
+import Data.Time.Calendar
+import Safe
 
 import Handler.AddForm
 import Handler.Common
+import Handler.Utils
 
 import Hledger.Data
 import Hledger.Query
@@ -23,20 +26,49 @@ getDashboardR = do
   vd@VD{..} <- getViewData
   hledgerLayout vd "dashboard" [hamlet|
     <h2#contenttile>Dashboard
-    ^{postingsMonthlyHistory opts am j}
+    ^{postingsMonthlyHistory opts today am j}
   |]
-  where postingsMonthlyHistory opts am j =
-          postingsMonthlyHistoryChartAsHtml $ postingsReport (reportopts_ $ cliopts_ opts){depth_=Just 1, monthly_=True} postingsMonthlyHistoryQuery j
+  where postingsMonthlyHistory opts today am j =
+          postingsMonthlyHistoryChartAsHtml today $ postingsReport (reportopts_ $ cliopts_ opts){depth_=Just 1, monthly_=True} postingsMonthlyHistoryQuery j
 
-postingsMonthlyHistoryChartAsHtml :: PostingsReport -> HtmlUrl AppRoute
-postingsMonthlyHistoryChartAsHtml (totallabel, items') =
+postingsMonthlyHistoryChartAsHtml :: Day -> PostingsReport -> HtmlUrl AppRoute
+postingsMonthlyHistoryChartAsHtml today (totallabel, items') =
   [hamlet|
-    <p>
-      $forall i <- items'
-        ^{itemAsHtml i}
+<label#postings-chart-label style=""><br>
+<div#postings-chart style="width:85%; height:150px; margin-bottom:1em; display:block;">
+<script type=text/javascript>
+ \$(document).ready(function() {
+   var $chartdiv = $('#postings-chart');
+   if ($chartdiv.is(':visible')) {
+     \$('#postings-chart-label').text('expenses');
+     var seriesData = [
+       {
+        data: [
+          $forall i <- items'
+           [
+            #{dayToJsTimestamp $ postingReportItemDay i},
+            #{simpleMixedAmountQuantity $ pamount $ posting i}
+           ],
+        ],
+        label: 'expenses',
+        lines: {
+          show: true,
+          steps: true,
+        },
+        points: {
+          show: false,
+        },
+        clickable: false,
+        hoverable: false,
+       },
+     ]
+     var plot = registerChart($chartdiv, seriesData);
+     \$chartdiv.bind("plotclick", registerChartClick);
+   };
+ });
   |]
   where
-    itemAsHtml (Just day, _, description, posting, amount) =
-      [hamlet|#{show day} #{mixedAmountAsHtml $ pamount posting}<br>|]
-    itemAsHtml (Nothing,  _, description, _, amount) =
-      [hamlet|<br>|]
+    simpleMixedAmountQuantity = maybe 0 aquantity . headMay . amounts
+    posting (_, _, _, p, _) = p
+    postingReportItemDay (Just d,  _, _, _, _) = d
+    postingReportItemDay (Nothing, _, _, _, _) = today
